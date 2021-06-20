@@ -1,5 +1,7 @@
 mod pwd;
 
 fn main() {
-    pwd::get_encpwd("prathik");
+    let result = pwd::get_encpwd("chomsky".to_string()).unwrap();
+
+    println!("encrypted password is {}", result);
 }
