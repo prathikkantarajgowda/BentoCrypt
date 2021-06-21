@@ -1,13 +1,20 @@
-use std::ffi::CStr;
-use std::ffi::CString;
 use libc::c_char;
 use libc::spwd;
+use scrypt::{
+    password_hash::{PasswordHasher, SaltString},
+    Scrypt
+};
+use rand::rngs::OsRng;
+use std::ffi::CStr;
+use std::ffi::CString;
 
 /* 
  * get_encpwd takes a username and finds its associated encrypted password
  * from /etc/shadow
  */
 pub fn get_encpwd(user: String) -> Result<String, String>  {
+
+    /* get the pwd_struct from getspnam_rust and check for errors */
     let pwd_struct = getspnam_rust(user);
     let pwd_struct = match pwd_struct {
         Ok(pwd_struct) => pwd_struct,
@@ -16,7 +23,7 @@ pub fn get_encpwd(user: String) -> Result<String, String>  {
     };
 
     /* check if pwd_struct ptr is aligned? */
-    
+
     /* 
      * get password from struct and return it
      *
@@ -26,7 +33,7 @@ pub fn get_encpwd(user: String) -> Result<String, String>  {
     let pwdp_c_char = unsafe { (*pwd_struct).sp_pwdp };
     let pwdp_cstr = unsafe { CStr::from_ptr(pwdp_c_char) };
     let pwdp = pwdp_cstr.to_string_lossy().to_string();
-    
+
     return Ok(pwdp);
 }
 
@@ -34,7 +41,6 @@ pub fn get_encpwd(user: String) -> Result<String, String>  {
  * getspnam_rust is a wrapper around libc's getspnam that allows the user
  * to pass a rust String instead of a *const c_char and avoids directly
  * dealing with FFI/libc
- *
  */
 pub fn getspnam_rust(user: String) -> Result<*mut spwd, String> {
 
@@ -60,4 +66,21 @@ pub fn getspnam_rust(user: String) -> Result<*mut spwd, String> {
     }
 
     return Ok(pwd_struct);
+}
+
+/*
+ * derive_kek takes a password and creates a KEK using the scrypt algorithm
+ */
+pub fn derive_kek(pwd: String) -> Result<String, String> {
+
+    /* generate salt using OS random number generator */
+    let salt = SaltString::generate(&mut OsRng);
+
+    /* then derive our KEK using our encrypted password and salt as input */
+    let kek = Scrypt.hash_password_simple(pwd.as_bytes(), salt.as_ref());
+
+    match kek {
+        Ok(kek)    => return Ok(kek.to_string()),
+        Err(error) => return Err(error.to_string()),
+    };
 }
