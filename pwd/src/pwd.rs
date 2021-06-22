@@ -8,10 +8,26 @@ use rand::rngs::OsRng;
 use std::ffi::CStr;
 use std::ffi::CString;
 
+/*
+ * highest level function - most can just call this and ignore the
+ * sub-functions below
+ *
+ * username_to_kek takes a username and derives a kek from it using the
+ * functions get_encpwd and derive_kek
+ */
 pub fn username_to_kek(user: String) -> Result<String, String> {
-    let encpwd = get_encpwd(user)
-        .expect("get_encpwd failed");
 
+    /* get the encrypted password */
+    let encpwd = get_encpwd(user);
+
+    /* check for errors */
+    let encpwd = match encpwd {
+        Ok(pwd) => pwd,
+        Err(error) => panic!("Problem calling get_encpwd: {:?}",
+            error),
+    };
+
+    /* return the result of derive_kek on our encrypted password */
     return derive_kek(encpwd);
 }
 
@@ -86,8 +102,8 @@ pub fn derive_kek(pwd: String) -> Result<String, String> {
     /* then derive our KEK using our encrypted password and salt as input */
     let kek = Scrypt.hash_password_simple(pwd.as_bytes(), salt.as_ref());
 
-    match kek {
-        Ok(kek)    => return Ok(kek.to_string()),
-        Err(error) => return Err(error.to_string()),
+    return match kek {
+        Ok(kek)    => Ok(kek.to_string()),
+        Err(error) => Err(error.to_string()),
     };
 }
