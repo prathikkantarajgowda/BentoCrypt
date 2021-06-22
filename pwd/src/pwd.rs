@@ -8,6 +8,13 @@ use rand::rngs::OsRng;
 use std::ffi::CStr;
 use std::ffi::CString;
 
+pub fn username_to_kek(user: String) -> Result<String, String> {
+    let encpwd = get_encpwd(user)
+        .expect("get_encpwd failed");
+
+    return derive_kek(encpwd);
+}
+
 /* 
  * get_encpwd takes a username and finds its associated encrypted password
  * from /etc/shadow
