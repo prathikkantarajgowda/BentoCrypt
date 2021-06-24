@@ -1,10 +1,10 @@
 use libc::c_char;
 use libc::spwd;
+use rand::rngs::OsRng;
 use scrypt::{
     password_hash::{PasswordHasher, SaltString},
     Scrypt
 };
-use rand::rngs::OsRng;
 use std::ffi::CStr;
 use std::ffi::CString;
 
@@ -15,20 +15,60 @@ use std::ffi::CString;
  * username_to_kek takes a username and derives a kek from it using the
  * functions get_encpwd and derive_kek
  */
-pub fn username_to_kek(user: String) -> Result<String, String> {
+pub fn username_to_kek() -> Result<String, String> {
 
-    /* get the encrypted password */
+    /* get the login username and check for errors */
+    let user = getlogin_rust();
+    let user = match user {
+        Ok(user) => user,
+        Err(error) => return Err(error),
+    };
+
+    /* get the encrypted password and check for errors */
     let encpwd = get_encpwd(user);
-
-    /* check for errors */
     let encpwd = match encpwd {
         Ok(pwd) => pwd,
-        Err(error) => panic!("Problem calling get_encpwd: {:?}",
-            error),
+        Err(error) => return Err(error),
     };
 
     /* return the result of derive_kek on our encrypted password */
     return derive_kek(encpwd);
+}
+
+/*
+ * function to convert a C string (a char pointer) to a rust String
+ *
+ * WARNING: Will fail if given faulty pointer. Working with C strings is
+ * dangerous
+ */
+pub fn cstring_to_string(cstring: *mut c_char) -> String {
+
+    /* convert to CStr as an intermediate */
+    let cstr: &CStr = unsafe {
+        CStr::from_ptr(cstring)
+    };
+
+    /* now we can convert to Rust String */
+    return cstr.to_string_lossy().to_string();
+}
+
+/*
+ * safe wrapper to use libc::getlogin() and return the login username as a
+ * String
+ */
+pub fn getlogin_rust() -> Result<String, String> {
+
+    /* call getlogin and check for null */
+    let username = unsafe {
+        libc::getlogin()
+    };
+    if username.is_null() {
+        return Err("libc::getlogin failed".to_string());
+    }
+
+    /* convert it to a string */
+    let username_string = cstring_to_string(username);
+    return Ok(username_string);
 }
 
 /* 
@@ -41,7 +81,7 @@ pub fn get_encpwd(user: String) -> Result<String, String>  {
     let pwd_struct = getspnam_rust(user);
     let pwd_struct = match pwd_struct {
         Ok(pwd_struct) => pwd_struct,
-        Err(error)     => panic!("Problem calling getspnam_rust: {:?}",
+        Err(error)     => panic!("problem calling getspnam_rust: {:?}",
             error),
     };
 
@@ -53,8 +93,10 @@ pub fn get_encpwd(user: String) -> Result<String, String>  {
      * we can dereference a raw ptr after checking to make sure it is non-NULL
      * and unaligned
      */
-    let pwdp_c_char = unsafe { (*pwd_struct).sp_pwdp };
-    let pwdp_cstr = unsafe { CStr::from_ptr(pwdp_c_char) };
+    let pwdp_cstr = unsafe {
+	    CStr::from_ptr((*pwd_struct).sp_pwdp)
+    };
+    
     let pwdp = pwdp_cstr.to_string_lossy().to_string();
 
     return Ok(pwdp);
@@ -81,7 +123,9 @@ pub fn getspnam_rust(user: String) -> Result<*mut spwd, String> {
      * now we actually perform the call to libc::getspnam with our
      * *const c_char
      */
-    let pwd_struct = unsafe { libc::getspnam(user_char) };
+    let pwd_struct = unsafe {
+	    libc::getspnam(user_char)
+    };
 
     /* if getspnam returned NULL, it could not find the user on the system */
     if pwd_struct.is_null() {
