@@ -1,5 +1,6 @@
 use aes_gcm::{Aes256Gcm, Key, Nonce};
 use aes_gcm::aead::{Aead, NewAead};
+use generic_array::{ArrayLength, GenericArray};
 use rand_core::{RngCore, OsRng};
 
 pub const MASTERKEYLEN: usize = 32; /* 32 bytes = 256 bits */
@@ -21,26 +22,30 @@ pub fn gen_masterkey() -> [u8; MASTERKEYLEN] {
     return masterkey;
 }
 
-pub fn encrypt_masterkey(masterkey: [u8; MASTERKEYLEN], kek: String) -> [u8; MASTERKEYLEN] {
+pub fn encrypt_masterkey(nonce: [u8; NONCELEN],
+                         masterkey: [u8; MASTERKEYLEN],
+                         kek: String) -> Vec<u8> {
 
     /* 
      * convert kek from String to bytes, then to Key type. finally create
      * a cipher out of this key
      */
-    let kek_bytes: &[u8] = kek.as_bytes();
-    let key              = Key::from_slice(kek_bytes);
-    let cipher           = Aes256Gcm::new(key);
+    let key = GenericArray::from_slice(b"an example very very secret key.");
+    let cipher = Aes256Gcm::new(key);
 
-    /* create and fill a nonce (len = 12 bytes = 96-bits) with random bytes */
+    let nonce = gen_nonce();
+    let nonce = GenericArray::from_slice(&nonce);
+    let ciphertext = cipher.encrypt(nonce, b"plaintext message".as_ref())
+        .expect("encryption failure!");
+
+    return ciphertext;
+}
+
+pub fn gen_nonce() -> [u8; NONCELEN] {
+
     let mut nonce = [0u8; NONCELEN];
     OsRng.fill_bytes(&mut nonce);
-    let nonce = Nonce::from_slice(&nonce);
+    println!("nonce is {:?}", nonce);
 
-    let ciphertext = cipher.encrypt(nonce, masterkey.as_ref())
-        .expect("encryption failure!"); // NOTE: handle this error to avoid panics!
-
-    let plaintext = cipher.decrypt(nonce, ciphertext.as_ref())
-        .expect("decryption failure!"); // NOTE: handle this error to avoid panics!
-
-    return masterkey;
+    return nonce;
 }

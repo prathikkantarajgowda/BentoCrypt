@@ -6,7 +6,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc = "0.2.97"
-scrypt = "0.7"
-rand = "0.8.4"
-rand_core = "0.6.3"
+base64      = "0.13.0"
+libc        = "0.2.97"
+scrypt      = "0.7"
+rand        = "0.8.4"
+rand_core   = "0.6.3"
+rust-argon2 = "0.8"
