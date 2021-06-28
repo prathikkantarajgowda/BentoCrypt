@@ -1,12 +1,16 @@
 use libc::c_char;
 use libc::spwd;
-use rand::rngs::OsRng;
+//use rand::rngs::{RngCore, OsRng};
+use rand_core::{OsRng};
 use scrypt::{
     password_hash::{PasswordHasher, SaltString},
     Scrypt
 };
 use std::ffi::CStr;
 use std::ffi::CString;
+
+pub const MASTERKEYLEN: usize = 32;
+pub const NONCELEN: usize     = 12;
 
 /*
  * highest level function - most can just call this and ignore the
@@ -85,8 +89,6 @@ pub fn get_encpwd(user: String) -> Result<String, String>  {
             error),
     };
 
-    /* check if pwd_struct ptr is aligned? */
-
     /* 
      * get password from struct and return it
      *
@@ -146,8 +148,8 @@ pub fn derive_kek(pwd: String) -> Result<String, String> {
     /* then derive our KEK using our encrypted password and salt as input */
     let kek = Scrypt.hash_password_simple(pwd.as_bytes(), salt.as_ref());
 
-    return match kek {
-        Ok(kek)    => Ok(kek.to_string()),
+    match kek {
+        Ok(kek)    => let kek = Ok(kek.to_string()),
         Err(error) => Err(error.to_string()),
     };
 }

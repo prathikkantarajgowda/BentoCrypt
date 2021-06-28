@@ -7,3 +7,6 @@ all:
 clean:
 	cargo clean
 	rm -rf *.o
+
+build:
+	cargo build
