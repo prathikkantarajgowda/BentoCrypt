@@ -1,51 +1,48 @@
-use argon2::{self, Config};
+use hex;
 use libc::c_char;
 use libc::spwd;
-use rand_core::{OsRng};
-use scrypt::{
-    password_hash::{PasswordHasher, SaltString},
-    Scrypt
-};
+use rand_core::OsRng;
+use rand_core::RngCore;
+use scrypt;
 use std::ffi::CStr;
 use std::ffi::CString;
 
-pub const MASTERKEYLEN: usize = 32;
-pub const NONCELEN:     usize = 12;
+pub const SCRYPT_N: u8    = 14; /* iterations  = LOG2(16348) = 14 */
+pub const SCRYPT_R: u32   =  8; /* block size  = 8                */
+pub const SCRYPT_P: u32   =  1; /* parallelism = 1                */
 
-/*
- * function to convert a C string (a char pointer) to a rust String
- *
- * WARNING: Will fail if given faulty pointer. Working with C strings is
- * dangerous
- */
-pub fn cstring_to_string(cstring: *mut c_char) -> String {
-
-    /* convert to CStr as an intermediate */
-    let cstr: &CStr = unsafe {
-        CStr::from_ptr(cstring)
-    };
-
-    /* now we can convert to Rust String */
-    return cstr.to_string_lossy().to_string();
-}
+pub const SALTLEN:  usize = 32; /* salt length = 32 bytes         */
+pub const KEKLEN:   usize = 32; /* kek length  = 32 bytes         */
 
 /*
  * safe wrapper to use libc::getlogin() and return the login username as a
- * String
+ * Rust String
  */
 pub fn getlogin_rust() -> Result<String, String> {
 
     /* call getlogin and check for null */
-    let username = unsafe {
+    let username_char: *const c_char = unsafe {
         libc::getlogin()
     };
-    if username.is_null() {
+
+    if username_char.is_null() {
         return Err("libc::getlogin failed".to_string());
     }
 
-    /* convert it to a string */
-    let username_string = cstring_to_string(username);
-    return Ok(username_string);
+    /* 
+     * convert it to a string 
+     *
+     * WARNING: will fail if given faulty pointer
+     */
+    let username_cstr: &CStr = unsafe {
+        CStr::from_ptr(username_char)
+    };
+
+    let username: String = username_cstr
+        .to_string_lossy()
+        .to_string();
+    
+    return Ok(username);
 }
 
 /* 
@@ -56,7 +53,7 @@ pub fn get_encpwd(user: String) -> Result<String, String>  {
 
     /* get the pwd_struct from getspnam_rust and check for errors */
     let pwd_struct = getspnam_rust(user);
-    let pwd_struct = match pwd_struct {
+    let pwd_struct: *mut spwd = match pwd_struct {
         Ok(pwd_struct) => pwd_struct,
         Err(error)     => return Err(error),
     };
@@ -67,11 +64,13 @@ pub fn get_encpwd(user: String) -> Result<String, String>  {
      * we can dereference a raw ptr after checking to make sure it is non-NULL
      * and unaligned
      */
-    let pwdp_cstr = unsafe {
+    let pwdp_cstr: &CStr = unsafe {
 	    CStr::from_ptr((*pwd_struct).sp_pwdp)
     };
     
-    let pwdp = pwdp_cstr.to_string_lossy().to_string();
+    let pwdp: String = pwdp_cstr
+        .to_string_lossy()
+        .to_string();
 
     return Ok(pwdp);
 }
@@ -89,7 +88,7 @@ pub fn getspnam_rust(user: String) -> Result<*mut spwd, String> {
     }
 
     /* convert from String to *const c_char */
-    let user_str  = CString::new(user)
+    let user_str: CString        = CString::new(user)
         .expect("CString::new failed");
     let user_char: *const c_char = user_str.as_ptr() as *const c_char;
 
@@ -111,32 +110,24 @@ pub fn getspnam_rust(user: String) -> Result<*mut spwd, String> {
 
 /*
  * derive_kek takes a password and creates a KEK using the scrypt algorithm
+ *
+ * KEK is 32-bytes, hex encoded (so 64 characters)
  */
-pub fn derive_kek(pwd: String) -> Result<String, String> {
+pub fn derive_kek(pwd: String) -> String {
 
-    /* generate salt using OS random number generator */
-    let salt = SaltString::generate(&mut OsRng);
+    /* set up scrypt parameters */
+    let params: scrypt::Params  = scrypt::Params::new(SCRYPT_N, 
+                                                      SCRYPT_R,
+                                                      SCRYPT_P).unwrap();
+    let password: &[u8]         = pwd.as_bytes();
+    let mut salt: [u8; SALTLEN] = [0u8; SALTLEN];
+    let mut kek:  [u8; KEKLEN]  = [0u8; KEKLEN];
+    OsRng.fill_bytes(&mut salt);
 
-    /* then derive our KEK using our encrypted password and salt as input */
-    let kek = Scrypt.hash_password_simple(pwd.as_bytes(), salt.as_ref());
-
-    match kek {
-        Ok(kek)    => return Ok(kek.to_string()),
-        Err(error) => return Err(error.to_string()),
-    };
-}
-
-/*
- * derive_kek_argon takes a password and creates a KEK using the argon2
- * algorithm
- */
-pub fn derive_kek_argon(pwd: String) -> Result<String, String> {
-
-    let salt     = SaltString::generate(&mut OsRng);
-    let password = pwd.as_bytes();
-    let config = Config::default();
-    let hash     = argon2::hash_encoded(password, salt.as_bytes(), &config)
+    /* call scrypt key derivation function using our (default) parameters */
+    scrypt::scrypt(password, &salt, &params, &mut kek)
         .unwrap();
-   
-    return Ok(hash);
+
+    /* return String hex encoding of our kek */
+    return hex::encode(kek);
 }

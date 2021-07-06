@@ -1,4 +1,5 @@
 use crate::util;
+extern crate base64;
 
 /*
  * highest level function
@@ -23,5 +24,7 @@ pub fn username_to_kek() -> Result<String, String> {
     };
 
     /* return the result of derive_kek on our encrypted password */
-    return util::derive_kek_argon(encpwd);
+    let kek = util::derive_kek(encpwd);
+
+    return Ok(kek);
 }
