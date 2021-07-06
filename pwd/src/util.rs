@@ -29,7 +29,7 @@ use scrypt;
 use std::ffi::CStr;
 use std::ffi::CString;
 
-pub const SCRYPT_N: u8    = 14; /* iterations  = LOG2(16348) = 14 */
+pub const SCRYPT_N: u8    = 10; /* iterations  = LOG2(16348) = 14 */
 pub const SCRYPT_R: u32   =  8; /* block size  = 8                */
 pub const SCRYPT_P: u32   =  1; /* parallelism = 1                */
 
