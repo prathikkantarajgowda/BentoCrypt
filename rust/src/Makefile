@@ -1,5 +1,5 @@
 # 
-# pwd: a program to derive a KEK from the login user's encrypted password
+# BentoCrypt: a stacked, encrypted Linux file system written in Rust with Bento
 # Copyright (C) 2021  Prathik Gowda (gowdapra@grinnell.edu)
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ build:
 	@cargo build
 
 run: build
-	@sudo ./target/debug/pwd
+	@cargo run
 
 clean:
 	@cargo clean

@@ -22,12 +22,13 @@
 
 .POSIX:
 
-build:
-	@cargo build
+.PHONY: pwd enc_mk
 
-run: build
-	@sudo ./target/debug/pwd
+all: pwd enc_mk
+	sudo ./pwd/target/debug/pwd | ./rust/target/debug/bento_crypt
 
-clean:
-	@cargo clean
-	@rm -rf *.o
+pwd:
+	$(MAKE) -s -C $@
+
+enc_mk:
+	$(MAKE) -s -C rust/src

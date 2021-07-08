@@ -21,13 +21,10 @@
  */
 
 use hex;
-use libc::c_char;
-use libc::spwd;
-use rand_core::OsRng;
-use rand_core::RngCore;
+use libc::{c_char, spwd};
+use rand_core::{OsRng, RngCore};
 use scrypt;
-use std::ffi::CStr;
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 
 pub const SCRYPT_N: u8    = 10; /* iterations  = LOG2(16348) = 14 */
 pub const SCRYPT_R: u32   =  8; /* block size  = 8                */

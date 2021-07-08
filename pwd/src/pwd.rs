@@ -30,6 +30,15 @@ use crate::util;
  */
 pub fn username_to_kek() -> Result<String, String> {
 
+    //println!("\n======================================================================================");
+    //println!("|| pwd version 0.1, Copyright (C) 2021 Prathik Gowda <gowdapra@grinnell.edu>        ||");
+    //println!("|| pwd comes with ABSOLUTELY NO WARRANTY                                            ||");
+    //println!("|| This is free software, and you are welcome to redistribute it                    ||");
+    //println!("|| under certain conditions.                                                        ||");
+    //println!("======================================================================================\n");
+
+    //println!("generating kek...\n");
+
     /* get the login username and check for errors */
     let user = util::getlogin_rust();
     let user = match user {
@@ -46,6 +55,8 @@ pub fn username_to_kek() -> Result<String, String> {
 
     /* return the result of derive_kek on our encrypted password */
     let kek = util::derive_kek(encpwd);
+
+    println!("{}", kek);
 
     return Ok(kek);
 }

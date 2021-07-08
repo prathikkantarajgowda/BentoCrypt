@@ -1,10 +1,30 @@
+/* 
+ * BentoCrypt: a stacked, encrypted Linux file system written in Rust with Bento
+ * Copyright (C) 2021  Prathik Gowda (gowdapra@grinnell.edu)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ *
+ * main.rs
+ */
+
 mod masterkey;
 mod util;
 
-use hex;
-
 fn main() {
-    let mk_enc   = masterkey::encrypt_masterkey("e1b7864680360cc7ad87c9e36c990f1ca43e577dd29b78f5a0cb34bd5ad27f5a".to_string());
-    let mk = hex::encode(mk_enc);
-    println!("(hex) encrypted masterkey is \"{}\"", mk);
+    let kek = "b0e50692172d16a8d160675b6fb3dfe4b02158659f2041c66cb32b6055ba45db".to_string();
+
+    masterkey::gen_enc_masterkey(kek.to_string());
 }
