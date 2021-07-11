@@ -20,12 +20,11 @@
  * masterkey.rs
  */
 
-
 use crate::util;
 
-use aes_gcm::{Aes256Gcm, Key};
-use aes_gcm::aead::{Aead, NewAead};
-use generic_array::{GenericArray};
+use aes_gcm::Aes256Gcm; // Or `Aes128Gcm`
+use aes_gcm::aead::{Aead, NewAead, generic_array::GenericArray};
+
 use hex;
 
 pub fn gen_enc_masterkey(kek_str: String) -> Vec<u8> {
@@ -42,7 +41,7 @@ pub fn gen_enc_masterkey(kek_str: String) -> Vec<u8> {
     /* decode (32-byte) kek from hex and then create a cipher out of it */
     let kek_vec   = hex::decode(kek_str)
         .unwrap();
-    let kek       = Key::from_slice(kek_vec.as_slice());
+    let kek       = GenericArray::from_slice(kek_vec.as_slice());
     let cipher    = Aes256Gcm::new(kek);
 
     /* generate (12-byte) nonce */

@@ -439,12 +439,21 @@ impl BentoFilesystem<'_, Xv6State,Xv6State> for Xv6FileSystem {
         _flags: u32,
         reply: ReplyWrite,
     ) {
+        /* 
+         * data we want to write is the parameter data: &[u8] 
+         *
+         * if we encrypt the data before the body of the original function,
+         * then we will be writing encrypted data to the disk
+         */
+
+
         // Get the inode at nodeid
         let max = ((MAXOPBLOCKS - 1 - 1 - 2) / 2) * BSIZE;
         let mut i = 0;
         let n = data.len();
         let mut off = offset as usize;
         let mut file_off = 0;
+
         while i < n {
             let log = self.log.as_ref().unwrap();
             let inode = match self.iget(nodeid) {

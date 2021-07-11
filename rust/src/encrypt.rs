@@ -17,15 +17,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *
- * main.rs
+ * encrypt.rs
  */
 
-mod encrypt;
-mod masterkey;
-mod util;
+use crate::util;
 
-fn main() {
-    let kek = "b0e50692172d16a8d160675b6fb3dfe4b02158659f2041c66cb32b6055ba45db".to_string();
+use aes_gcm::Aes256Gcm; // Or `Aes128Gcm`
+use aes_gcm::aead::{Aead, NewAead, generic_array::GenericArray};
 
-    masterkey::gen_enc_masterkey(kek.to_string());
+pub fn encrypt(data: &[u8], masterkey: [u8; 32]) -> &[u8] {
+
+    /* create cipher from masterkey */
+    let mk_ref = GenericArray::clone_from_slice(&masterkey);
+    let cipher = Aes256Gcm::new(&mk_ref);
+
+    /* generate (12-byte) nonce */
+    let nonce = util::gen_nonce();
+    let nonce = GenericArray::clone_from_slice(&nonce);
+
+    return data;
 }
