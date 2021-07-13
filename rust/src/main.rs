@@ -25,7 +25,11 @@ mod masterkey;
 mod util;
 
 fn main() {
-    let kek = "b0e50692172d16a8d160675b6fb3dfe4b02158659f2041c66cb32b6055ba45db".to_string();
+    let kek = "b0e50692172d16a8d160675b6fb3dfe4b02158659f2041c66cb32b6055ba45db"
+        .to_string();
 
     masterkey::gen_enc_masterkey(kek.to_string());
+
+    let data: [u8; 64] = [0u8; 64];
+    let encrypted = encrypt::encrypt_data(&data, kek);
 }

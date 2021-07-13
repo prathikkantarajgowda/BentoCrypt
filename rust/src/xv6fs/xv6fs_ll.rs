@@ -446,7 +446,6 @@ impl BentoFilesystem<'_, Xv6State,Xv6State> for Xv6FileSystem {
          * then we will be writing encrypted data to the disk
          */
 
-
         // Get the inode at nodeid
         let max = ((MAXOPBLOCKS - 1 - 1 - 2) / 2) * BSIZE;
         let mut i = 0;

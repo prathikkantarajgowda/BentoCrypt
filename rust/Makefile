@@ -11,7 +11,7 @@ all:
 	make userspace
 
 kernel:
-	cp src/* kernel/src/
+	cp src/xv6fs/* kernel/src/
 	$(MAKE) -C $(KDIR) M=$(CURDIR)/kernel CC=$(CC) CONFIG_CC_IS_CLANG=y
 
 userspace:
