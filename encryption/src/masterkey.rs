@@ -27,16 +27,19 @@ use aes_gcm::aead::{Aead, NewAead, generic_array::GenericArray};
 
 use hex;
 
+use no_std_compat::string::String;
+use no_std_compat::vec::Vec;
+
 pub fn gen_enc_masterkey(kek_str: String) -> Vec<u8> {
 
-    println!("\n======================================================================================");
-    println!("|| BentoCrypt version 0.1, Copyright (C) 2021 Prathik Gowda <gowdapra@grinnell.edu> ||");
-    println!("|| BentoCrypt comes with ABSOLUTELY NO WARRANTY                                     ||");
-    println!("|| This is free software, and you are welcome to redistribute it                    ||");
-    println!("|| under certain conditions.                                                        ||");
-    println!("======================================================================================\n");
+    //println!("\n======================================================================================");
+    //println!("|| BentoCrypt version 0.1, Copyright (C) 2021 Prathik Gowda <gowdapra@grinnell.edu> ||");
+    //println!("|| BentoCrypt comes with ABSOLUTELY NO WARRANTY                                     ||");
+    //println!("|| This is free software, and you are welcome to redistribute it                    ||");
+    //println!("|| under certain conditions.                                                        ||");
+    //println!("======================================================================================\n");
 
-    println!("generating and encrypting masterkey...\n");
+    //println!("generating and encrypting masterkey...\n");
 
     /* decode (32-byte) kek from hex and then create a cipher out of it */
     let kek_vec   = hex::decode(kek_str)
@@ -61,7 +64,7 @@ pub fn gen_enc_masterkey(kek_str: String) -> Vec<u8> {
         .expect("decryption failure!");
     assert_eq!(&plaintext, masterkey_str.as_bytes());
 
-    println!("success!\n");
+    //println!("success!\n");
 
     return ciphertext;
 }

@@ -31,5 +31,5 @@ fn main() {
     masterkey::gen_enc_masterkey(kek.to_string());
 
     let data: [u8; 64] = [0u8; 64];
-    let encrypted = encrypt::encrypt_data(&data, kek);
+    let _encrypted = encrypt::encrypt_data(&data, kek);
 }

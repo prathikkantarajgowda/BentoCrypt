@@ -25,12 +25,15 @@ use crate::util;
 use aes_gcm::Aes256Gcm;
 use aes_gcm::aead::{Aead, NewAead};
 
+use no_std_compat::string::String;
+use no_std_compat::vec::Vec;
+
 use generic_array::{GenericArray, typenum::U12};
 
 pub fn encrypt_data(data: &[u8], mk_str: String) -> Vec<u8> {
 
     /* print length of data (debugging) */
-    println!("length of data is {}", data.len());
+    //println!("length of data is {}", data.len());
 
     /* create cipher from masterkey */
     let mk_vec = hex::decode(mk_str).unwrap();
