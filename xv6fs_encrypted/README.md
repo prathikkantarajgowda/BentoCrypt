@@ -49,7 +49,7 @@ make
 **To insert xv6fs:**
 Next, insert xv6fs kernel module (xv6fs directory).
 ```
-sudo insmod kernel/xv6fs.ko
+sudo insmod rust/kernel/xv6fs.ko
 ```
 
 **To mount file system:**
@@ -71,7 +71,7 @@ sudo rmmod xv6fs
 
 ## User version
 **To compile bentofs:**
-First, compile bentofs in a neighboring directory.
+First, compile bentofs (bentofs directory).
 ```
 make
 ```
@@ -100,6 +100,7 @@ make clean
 ```
 
 **To mount/insert:**
+To mount and insert (xv6fs directory).
 ```
 sudo mkdir -p /mnt/xv6fsll
 sudo userspace/target/release/user_xv6fs mkfs/fs.img /mnt/xv6fsll blkdev
