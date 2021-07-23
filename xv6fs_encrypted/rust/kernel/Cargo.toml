@@ -12,6 +12,7 @@ crate-type = ["staticlib"]
 [dependencies]
 bento = {path = "../../../bento/rust" }
 datablock = { path = "../../../datablock-rs/datablock" }
+encryption = { path = "../../../encryption" }
 arr_macro = "0.1.0"
 hash32 = "0.1.1"
 

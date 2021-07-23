@@ -15,13 +15,22 @@ arr_macro     = "0.1.0"
 generic-array = "0.14.4"
 hash32        = "0.1.1"
 no-std-compat = { version = "0.4.1", features = [ "alloc" ] }
-rand          = "0.8.4"
 rand_core     = "0.6.3"
 
 [dependencies.hex]
 version = "0.4"
 default-features = false
 features = ["alloc"]
+
+[dependencies.rand]
+version = "0.8.4"
+default-features = false
+features = ["alloc", "getrandom"]
+
+[dependencies.getrandom]
+version = "0.2.3"
+default-features = false
+features = ["rdrand"]
 
 [dependencies.serde]
 version = "*"
