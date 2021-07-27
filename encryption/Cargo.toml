@@ -1,5 +1,5 @@
 [package]
-name = "encryption"
+name    = "encryption"
 version = "0.1.0"
 authors = ["Prathik Gowda <gowdapra@grinnell.edu>",
 	  "John Chandy <jchandy@alum.mit.edu>"]
@@ -9,30 +9,36 @@ edition = "2018"
 name = "encryption"
 path = "src/lib.rs"
 
-[dependencies]
-aes-gcm       = "0.9.2"
-arr_macro     = "0.1.0"
-generic-array = "0.14.4"
-hash32        = "0.1.1"
-no-std-compat = { version = "0.4.1", features = [ "alloc" ] }
-rand_core     = "0.6.3"
-
-[dependencies.hex]
-version = "0.4"
+[dependencies.aes-gcm]
+version          = "0.9.2"
 default-features = false
-features = ["alloc"]
+features         = ["alloc", "aes"]
 
-[dependencies.rand]
-version = "0.8.4"
+[dependencies.generic-array]
+version          = "0.14.4"
 default-features = false
-features = ["alloc", "getrandom"]
 
 [dependencies.getrandom]
-version = "0.2.3"
+version          = "0.2.3"
 default-features = false
-features = ["rdrand"]
+features         = ["rdrand"]
 
-[dependencies.serde]
-version = "*"
+[dependencies.hex]
+version          = "0.4"
 default-features = false
-features = ["alloc", "derive"]
+features         = ["alloc"]
+
+[dependencies.no-std-compat]
+version          = "0.4.1"
+default-features = false
+features         = ["alloc"]
+
+[dependencies.rand]
+version          = "0.8.4"
+default-features = false
+features         = ["alloc", "getrandom"]
+
+[dependencies.rand_core]
+version          = "0.6.3"
+default-features = false
+features         = ["alloc", "getrandom"]

@@ -1,7 +1,7 @@
 #![no_std]
 
-mod masterkey;
-mod util;
+pub mod masterkey;
+pub mod util;
 
 use aes_gcm::Aes256Gcm;
 use aes_gcm::aead::{Aead, NewAead};

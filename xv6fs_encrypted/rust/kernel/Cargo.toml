@@ -15,8 +15,3 @@ datablock = { path = "../../../datablock-rs/datablock" }
 encryption = { path = "../../../encryption" }
 arr_macro = "0.1.0"
 hash32 = "0.1.1"
-
-[dependencies.serde]
-version = "*"
-default-features = false
-features = ["alloc", "derive"]
