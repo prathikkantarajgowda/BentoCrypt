@@ -23,7 +23,8 @@
 .POSIX:
 
 build:
-	@cargo build
+	rustup override set nightly-2021-04-27
+	@cargo build -Z build-std=core,alloc --release --target=x86_64-unknown-none-linuxkernel
 
 run: build
 	@cargo run
