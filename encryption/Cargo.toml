@@ -12,7 +12,7 @@ path = "src/lib.rs"
 [dependencies.aes-gcm]
 version          = "0.9.2"
 default-features = false
-features         = ["alloc", "aes"]
+features         = ["alloc", "aes", "force-soft"]
 
 [dependencies.generic-array]
 version          = "0.14.4"
