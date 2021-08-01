@@ -9,4 +9,4 @@ userspace: mkfs_user.o
 	gcc -o mkfs $^
 
 clean:
-	rm -rf *.o mkfs
+	rm -rf *.o mkfs fs.img

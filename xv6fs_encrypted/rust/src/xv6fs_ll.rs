@@ -55,6 +55,8 @@ use crate::xv6fs_file::*;
 use crate::xv6fs_htree::*;
 use crate::xv6fs_utils::*;
 
+use encryption::*;
+
 #[cfg_attr(not(feature = "user"), derive(Serialize, Deserialize))]
 pub struct Xv6State {
     diskname: String,
@@ -440,6 +442,20 @@ impl BentoFilesystem<'_, Xv6State,Xv6State> for Xv6FileSystem {
         _flags: u32,
         reply: ReplyWrite,
     ) {
+        /*
+         * before original body of bento_write, we want to encrypt the data field with
+         * our encryption library functions
+         */
+
+        /* generate a masterkey */
+        let kek = "b0e50692172d16a8d160675b6fb3dfe4b02158659f2041c66cb32b6055ba45db"
+            .to_string();
+        masterkey::gen_enc_masterkey(kek.to_string());
+
+        /* encrypt data field using our encrypt_data library function */
+        let data = encryption::encrypt_data(&data, kek);
+        let data: &[u8] = &data;
+
         // Get the inode at nodeid
         let max = ((MAXOPBLOCKS - 1 - 1 - 2) / 2) * BSIZE;
         let mut i = 0;
