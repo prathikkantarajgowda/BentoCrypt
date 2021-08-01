@@ -5,6 +5,7 @@ build = "build.rs"
 authors = ["Danyang Zhuo <danyangz@cs.washington.edu>",
            "Kaiyuan Zhang <kaiyuanz@cs.washington.edu>",
            "Samantha Miller <sm237@cs.washington.edu>"]
+edition = "2018"
 
 [build-dependencies]
 pkg-config = "0.3"
@@ -14,6 +15,7 @@ user = []
 
 [dependencies]
 datablock = { path = "../../../datablock-rs/datablock" }
+encryption = { path = "../../../encryption_userspace" }
 bento_utils = { path = "../../../bento_utils" }
 libc = "0.2.5"
 env_logger = "0.7.1"
