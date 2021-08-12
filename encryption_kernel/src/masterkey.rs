@@ -32,15 +32,6 @@ use no_std_compat::vec::Vec;
 
 pub fn gen_enc_masterkey(kek_str: String) -> Vec<u8> {
 
-    //println!("\n======================================================================================");
-    //println!("|| BentoCrypt version 0.1, Copyright (C) 2021 Prathik Gowda <gowdapra@grinnell.edu> ||");
-    //println!("|| BentoCrypt comes with ABSOLUTELY NO WARRANTY                                     ||");
-    //println!("|| This is free software, and you are welcome to redistribute it                    ||");
-    //println!("|| under certain conditions.                                                        ||");
-    //println!("======================================================================================\n");
-
-    //println!("generating and encrypting masterkey...\n");
-
     /* decode (32-byte) kek from hex and then create a cipher out of it */
     let kek_vec   = hex::decode(kek_str)
         .unwrap();
@@ -63,8 +54,6 @@ pub fn gen_enc_masterkey(kek_str: String) -> Vec<u8> {
     let plaintext  = cipher.decrypt(nonce, ciphertext.as_ref())
         .expect("decryption failure!");
     assert_eq!(&plaintext, masterkey_str.as_bytes());
-
-    //println!("success!\n");
 
     return ciphertext;
 }

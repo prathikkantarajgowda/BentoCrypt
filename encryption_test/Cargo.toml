@@ -1,0 +1,11 @@
+[package]
+name = "encryption_test"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+encryption = { path = "../encryption_userspace" }
+hex = "0.4.3"
+
+[dependencies.base64]
+version = "0.13.0"
