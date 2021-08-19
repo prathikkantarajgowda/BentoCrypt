@@ -426,7 +426,22 @@ impl BentoFilesystem<'_, Xv6State,Xv6State> for Xv6FileSystem {
             }
         };
 
-        reply.data(&buf_slice[0..read_rs as usize]);
+        /* print data buffer and read_rs */
+        println!("encrypted data buffer: {:?}", buf_slice);
+        println!("read_rs: {}", read_rs);
+
+        /* generate masterkey */
+        let mk = "an example very very secret key.".to_string();
+
+        /* decrypt */
+        let decrypted = encryption::decrypt_data(buf_slice[0..read_rs as usize].to_vec(), mk, "unique nonce".to_string());
+        println!("decrypted data buffer: {:?}", decrypted);
+        let decrypted_utf = str::from_utf8(&decrypted)
+            .unwrap();
+        println!("decrypted data utf8: {}", decrypted_utf);
+
+        reply.data(&decrypted);
+        //reply.data(&buf_slice[0..read_rs as usize]);
     }
 
     fn bento_write(
