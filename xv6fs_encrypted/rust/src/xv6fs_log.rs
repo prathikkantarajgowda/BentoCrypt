@@ -164,7 +164,8 @@ impl Journal {
             wait_q: Condvar::new(),
             disk: disk,
         };
-        new_journal.initlog(start, len, bsize);
+        new_journal.initlog(start, len, bsize)
+            .unwrap();
         return Some(new_journal);
     }
 
@@ -214,7 +215,8 @@ impl Journal {
         log.committing = 0;
         BLOCKER.store(true, Ordering::SeqCst);
         self.wait_q.notify_one();
-        self.disk.sync_all();
+        self.disk.sync_all()
+            .unwrap();
     }
 
     // Only writes to buffer cache, does not persist; only install_trans will persist data.

@@ -17,8 +17,6 @@ use time::Timespec;
 
 use fuse::*;
 
-use serde::{Serialize, Deserialize};
-
 pub const BENTO_KERNEL_VERSION: u32 = 1;
 pub const BENTO_KERNEL_MINOR_VERSION: u32 = 0;
 

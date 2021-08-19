@@ -141,13 +141,13 @@ impl Deref for BHLockGuard<'_> {
     type Target = BufferHead;
 
     fn deref(&self) -> &BufferHead {
-        unsafe { &*self.bh }
+        &*self.bh
     }
 }
 
 impl DerefMut for BHLockGuard<'_> {
     fn deref_mut(&mut self) -> &mut BufferHead {
-        unsafe { &mut *self.bh }
+        &mut *self.bh
     }
 }
 

@@ -49,13 +49,9 @@ use std::sync::RwLock;
 
 use time::*;
 
-use serde::{Serialize, Deserialize};
-
 use crate::xv6fs_file::*;
 use crate::xv6fs_htree::*;
 use crate::xv6fs_utils::*;
-
-use encryption::*;
 
 #[cfg_attr(not(feature = "user"), derive(Serialize, Deserialize))]
 pub struct Xv6State {
@@ -429,6 +425,7 @@ impl BentoFilesystem<'_, Xv6State,Xv6State> for Xv6FileSystem {
                 return;
             }
         };
+
         reply.data(&buf_slice[0..read_rs as usize]);
     }
 
@@ -448,12 +445,10 @@ impl BentoFilesystem<'_, Xv6State,Xv6State> for Xv6FileSystem {
          */
 
         /* generate a masterkey */
-        let kek = "b0e50692172d16a8d160675b6fb3dfe4b02158659f2041c66cb32b6055ba45db"
-            .to_string();
-        masterkey::gen_enc_masterkey(kek.to_string());
+        let mk = "an example very very secret key.".to_string();
 
         /* encrypt data field using our encrypt_data library function */
-        let data = encryption::encrypt_data(&data, kek);
+        let data = encryption::encrypt_data(&data, mk, "unique nonce".to_string());
         let data: &[u8] = &data;
 
         // Get the inode at nodeid

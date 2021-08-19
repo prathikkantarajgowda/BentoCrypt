@@ -1,5 +1,3 @@
-#![feature(slice_fill)]
-
 extern crate alloc;
 //#[macro_use]
 extern crate bento_utils;

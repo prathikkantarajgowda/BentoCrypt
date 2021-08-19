@@ -70,21 +70,9 @@ sudo rmmod xv6fs
 ```
 
 ## User version
-**To compile bentofs:**
-First, compile bentofs (bentofs directory).
-```
-make
-```
-
 **To clean:**
 ```
 cargo clean
-```
-
-**To insert bentofs:**
-Next, insert the bentofs kernel module (bentofs directory).
-```
-sudo insmod bentofs.ko
 ```
 
 **To compile xv6fs:**
@@ -100,10 +88,12 @@ make clean
 ```
 
 **To mount/insert:**
-To mount and insert (xv6fs directory).
+To mount and insert (xv6fs directory). Note that the second command appears to
+"hang". This is normal; the process won't return until the file system is
+unmounted.
 ```
 sudo mkdir -p /mnt/xv6fsll
-sudo userspace/target/release/user_xv6fs mkfs/fs.img /mnt/xv6fsll blkdev
+sudo rust/userspace/target/release/user_xv6fs mkfs/fs.img /mnt/xv6fsll
 ```
 
 **To unmount file system:**
